@@ -12,11 +12,11 @@ app.post('/createproduct',(req,res)=>{
         var productName = req.body.product_name;
         console.log('productName = ', productName);
 
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
 
-        dbo.createCollection(productName, function(err, dbres) {
+        dbo.createCollection(productName, (err, dbres) =>{
            if(err) {
             console.log('error while creating')
             res.send('createproduct failed')
@@ -39,11 +39,11 @@ app.post('/createversion',(req,res)=>{
     var versionName = req.body.version_name;
     console.log('versionName = ', versionName)
 
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
         var obj ={version: versionName};
-        dbo.collection(productName).insertOne(obj,function(err,dbres){
+        dbo.collection(productName).insertOne(obj,(err,dbres)=>{
             if(err){
                 console.log('error while creating version')
                 res.send('createversion failed')
@@ -62,11 +62,11 @@ app.get('/productlist',(req,res)=>{
     //get all productlist as all collections
     console.log('inside productlist')
 
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
         
-        dbo.listCollections().toArray(function(err, collections) {
+        dbo.listCollections().toArray((err, collections) =>{
 
             console.log('collections = ', collections)
 
@@ -79,13 +79,13 @@ app.get('/productlist',(req,res)=>{
 
 app.get('/versionlist',(req,res)=>{
     //get version list from given product as all documet
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
     
         var coll = req.query.collectionname;
 
-        dbo.collection(coll).find().toArray(function(err, versionlist) {
+        dbo.collection(coll).find().toArray((err, versionlist) =>{
             res.send(versionlist)
         });
     });
@@ -105,7 +105,7 @@ app.put('/updateversion', (req,res)=>{
     var versionName = req.body.version_name;
     console.log('versionName = ', versionName)
     
-    mongoclient.connect(url, {useUnifiedTopology : true}, function(err,db){
+    mongoclient.connect(url, {useUnifiedTopology : true}, (err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
         var query ={version: versionName};
@@ -115,7 +115,7 @@ app.put('/updateversion', (req,res)=>{
         var newValues = {$set: {version: versionName, name:req.body.name}}
         console.log('update version newValues =' + newValues)
 
-        dbo.collection(productName).updateOne(query, newValues, {upsert : true}, function(dberr, dbres) {
+        dbo.collection(productName).updateOne(query, newValues, {upsert : true}, (dberr, dbres)=> {
             if(dberr){
                 console.log('error while updating version')
                 res.send('updateversion failed')
@@ -133,11 +133,11 @@ app.delete("/deleteproduct",(req,res)=>{
     var productName = req.body.product_name;
         console.log('productName = ', productName);
 
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
 
-        dbo.dropCollection(productName, function(err, dbres) {
+        dbo.dropCollection(productName, (err, dbres) =>{
            if(err) {
             console.log('error while deleating')
             res.send('deleteproduct failed')
@@ -157,14 +157,16 @@ app.delete("/deleteversion",(req,res)=>{
     var productName = req.body.product_name;
     console.log('productName = ', productName);
 
+    console.log('body = ' + JSON.stringify(req.body))
+
     var versionName = req.body.version_name;
     console.log('versionName = ', versionName);
 
-    mongoclient.connect(url,function(err,db){
+    mongoclient.connect(url,(err,db)=>{
         if(err) throw err;
         var dbo= db.db("products");
         var obj ={version: versionName};
-        dbo.collection(productName).deleteOne(obj,function(err,dbres){
+        dbo.collection(productName).deleteOne(obj,(err,dbres)=>{
             if(err){
                 console.log('error while deleting version')
                 res.send('deleteversion failed')
@@ -178,7 +180,7 @@ app.delete("/deleteversion",(req,res)=>{
     });
 })
 
-app.listen(2000,function()
+app.listen(2000,()=>
 {
     console.log('listening port 2000')
 })
