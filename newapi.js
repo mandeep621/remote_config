@@ -58,6 +58,55 @@ app.post('/createversion',(req,res)=>{
 
 })
 
+
+app.post('/checkexists',(req,res)=>{
+
+    var productName = req.body.product_name;
+    console.log('productName = ',productName);
+
+    
+    var versionName = req.body.version_name;
+    console.log('versionName = ',versionName);
+
+
+    mongoclient.connect(url,{useUnifiedTopology : true},(err,db)=>{
+        if (err) throw err;
+        var dbo = db.db("products");
+        // var query = {version : versionName};
+        var obj ={version: versionName};
+
+
+        
+
+
+         dbo.collection(productName).find(obj).toArray(function(err, result){
+             console.log("result = ",result)
+        if(versionName == obj){
+        
+            console.log("already exists");
+        }
+            else{
+                dbo.collection(productName).insertOne(obj,(err,dbres)=>{
+                        if(err) {
+                         console.log('error while creating')
+                         res.send('createproduct failed')
+                        }
+                         else {
+                             console.log('createproduct success')
+                             res.send('createproduct success')
+                         }
+                         
+                     });    
+                }
+               
+            
+    })
+})
+
+
+})
+
+
 app.get('/productlist',(req,res)=>{
     //get all productlist as all collections
     console.log('inside productlist')
@@ -93,6 +142,33 @@ app.get('/versionlist',(req,res)=>{
 })
 
 app.get('/getconfig',(req,res)=>{
+
+    var productName = req.query.product_name;
+    console.log("productname = " ,productName);
+
+    var versionName = req.query.version_name;
+    console.log("versionname = ",versionName);
+
+    mongoclient.connect(url,{useUnifiedTopology : true},(err,db)=>{
+        if(err) throw err;
+        var dbo= db.db("products");
+        var query = { version:versionName};
+        console.log("query = ",query);
+        
+        dbo.collection(productName).find(query).toArray(function(err, result) {
+        
+            
+            console.log("result = ", result)
+
+            res.send(result)
+             
+        })
+    })
+    // var url = req.url
+    // console.log('url = ' + url)
+
+    // res.send(url)
+
     //get specified version info from given version number
 })
 
